@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-07-06 00:14:59
- * @LastEditTime: 2021-07-08 01:40:20
+ * @LastEditTime: 2021-07-12 17:38:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /node-test/blog-1/src/routers/blog.js
@@ -22,35 +22,47 @@ const handleBlogData = (req, res) => {
   if (method === "GET" && req.path === "/api/blog/list") {
     const author = req.query.author || "";
     const keyWord = req.query.keyWord || "";
-    const listData = getList(author, keyWord);
-    return new SuccessModel(listData);
+    const result = getList(author, keyWord);
+    return result.then((listData) => {
+      return new SuccessModel(listData);
+    });
   }
   if (method === "GET" && req.path === "/api/blog/detail") {
     const id = req.query.id;
-    const detailData = getDetail(id);
-    return new SuccessModel(detailData);
+    const result = getDetail(id);
+    return result.then((detailData) => {
+      return new SuccessModel(detailData);
+    });
   }
   if (method === "POST" && req.path === "/api/blog/new") {
+    req.body.author = "zw";
     const data = req.body;
-    const res = newBlog(data);
-    return new SuccessModel(res);
+    const result = newBlog(data);
+    return result.then((res) => {
+      return new SuccessModel(res);
+    });
   }
   if (method === "POST" && req.path === "/api/blog/update") {
     const data = req.body;
-    const res = updateBlog(id, data);
-    if (res) {
-      return new SuccessModel(res);
-    } else {
-      return new ErrorModel("更新失败");
-    }
+    const result = updateBlog(id, data);
+    return result.then((res) => {
+      if (res) {
+        return new SuccessModel(res);
+      } else {
+        return new ErrorModel("更新博客失败");
+      }
+    });
   }
   if (method === "DELETE" && req.path === "/api/blog/delete") {
-    const res = deleteBlog(id);
-    if (res) {
-      return new SuccessModel(res);
-    } else {
-      return new ErrorModel("删除失败");
-    }
+    const author = "zw";
+    const result = deleteBlog(id, author);
+    return result.then((res) => {
+      if (res) {
+        return new SuccessModel(res);
+      } else {
+        return new ErrorModel("删除博客失败");
+      }
+    });
   }
 };
 
