@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-07-04 23:11:23
- * @LastEditTime: 2021-07-12 18:54:27
+ * @LastEditTime: 2021-07-25 16:04:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /node-test/blog-1/app.js
@@ -37,10 +37,24 @@ const getPostData = (req) => {
 
 const serverHandle = (req, res) => {
   const env = process.env.NODE_ENV;
+  // 获取path
   const url = req.url;
   req.path = url.split("?")[0];
+  // 解析query
   req.query = querystring.parse(url.split("?")[1]);
+  // 设置返回格式 JSON
   res.setHeader("Content-type", "application/json");
+  // 解析cookie
+  req.cookie = {};
+  const cookieStr = req.headers.cookie || ""; // k1=v1;k2=v2
+  cookieStr.split(";").forEach((item) => {
+    if (!item) return;
+    const arr = item.split("=");
+    const key = arr[0];
+    const value = arr[1];
+    req.cookie[key] = value;
+  });
+  console.log(req.cookie, 'cookies');
   getPostData(req).then((postData) => {
     req.body = postData;
     const blogResult = handleBlogData(req, res);
